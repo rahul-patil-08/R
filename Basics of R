@@ -1,0 +1,108 @@
+
+library(tidyverse)
+
+#Merging Data keep unmatched records
+Merge1-tribble(~name,~Sex,
+               "Rahul","M",
+               "Rajesh","M",
+               "Nikitha","F",
+               "Anushaka","F",
+               "Radha","F",)
+Merge2<-tribble(~name,~Age,~Sex,
+               "Rahul",25,"M",
+               "Rajesh",28,"M",
+               "Nikitha",25,"F",
+               "Anushaka",12.5,"F",)
+Antijoin1<-anti_join(Merge1,Merge2,by=c("name"))
+Antijoin2<-anti_join(Merge2,Merge1,by=c("name"))
+
+
+#Merging Datasets-cartesian product (Cross join)
+Cross1<-tribble(~Name,~sex,
+               "Rahul","Male",
+               "Rajesh","Male",
+               "Radha","Female",
+               "Aditya","Male",)
+Cross2<-tribble(~Treatment,
+               1,2,3,4,)
+Crossjoin<-cross_join(Cross1,Cross2)
+
+
+
+#Sorting observations(Arrange/reorder observations)
+Arrange1<-arrange(Test2,Age)
+Arrange2<-arrange(Test2,desc(Age))
+
+
+#one-way Frequency (record count)
+Oneway1-count(Test1,Sex)
+Oneway2<-count(Test2,Age,Sex)
+
+
+#Descriptive Statistics for numeric variables
+SummmaryTableData<-tribble(~name,~Sex,~age,~Height,
+                            "Rahul","M",25,165,
+                            "Rajesh","M",28,175,
+                            "Nikitha","F",25,168,
+                            "Anushaka","F",9,90,
+                            "Radha","F",16,155,)
+Stasts1<-summarize(SummmaryTableData,
+                    No=n(),
+                    Mean_Height=mean(Height),
+                    Mean_Age=mean(age))
+Stasts2<-SummmaryTableData %>%
+            group_by(Sex) %>%
+            summarize(Number_of=n(),
+                      Mean_Height=mean(Height),
+                      Mean_Agw=mean(age))
+
+
+# First dot (Counter Variable Creation)
+Firstdot<- SummmaryTableData %>%
+  arrange(Sex,age,Height) %>%
+  group_by(Sex) %>%
+  mutate(Counter=row_number())
+lowheight<- SummmaryTableData %>%
+  arrange(Sex,age,Height) %>%
+  group_by(Sex) %>%
+  slice(3) %>%
+  select(name,Sex,Height)
+
+
+#last dot (Subset last record within a group)
+class<- tribble(~Name,~Sex,~Age,~Height,~Weight,
+                "Alfred","M",14,69,112.5,
+                "Alice","F",13,56.5,84,
+                "Barbara","F",13,65.3,98,
+                "Carol","F",14,62.8,102.5,
+                "Henry","M",14,63.5,102.5,
+                "James","M",12,57.3,83,
+                "Jane","F",12,59.8,84.5,
+                "Janet","F",15,62.5,112.5,
+                "Jeffrey","M",13,62.5,84,
+                "John","M",12,59,99.5,
+                "Joyce","F",11,51.3,50.5,
+                "Judy","F",14,64.3,90,
+                "Louise","F",12,56.3,77,
+                "Mary","F",15,66.5,112,
+                "Philip","M",16,72,150,
+                "Robert","M",12,64.8,128,
+                "Ronald","M",15,67,133,
+                "Thomas","M",11,57.5,85,
+                "William","M",15,66.5,112,)
+
+
+Lastdot<- class%>%
+  arrange(Sex,Height) %>%
+  group_by(Sex)%>%
+  slice(n())%>%
+select(Name,Sex,Age,Height)
+
+
+#firstdot and last dot (only one record in a group)
+firstdotlastdot<- class %>%
+ group_by(Age) %>%
+  mutate(nrows=n())%>%
+  filter(nrows==1)
+
+
